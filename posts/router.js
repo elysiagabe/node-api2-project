@@ -4,6 +4,8 @@ const Data = require('../data/db');
 
 const router = express.Router();
 
+const error404 = { errorMessage: "The post with the specified ID does not exist."}
+
 // ~~ ENDPOINTS ~~ //
 // Create post (POST, /api/posts)
 router.post('/', (req, res) => {
@@ -50,9 +52,7 @@ router.post('/:id/comments', (req, res) => {
                 })
             })
         } else {
-            res.status(404).json({
-                errorMessage: "The post with the specified ID does not exist."
-            })
+            res.status(404).json(error404)
         }
     })
     .catch(err => {
@@ -62,8 +62,6 @@ router.post('/:id/comments', (req, res) => {
         })
     })
 })
-
-
 
 // Return all posts (GET, /api/posts)
 router.get('/', (req, res) => {
@@ -85,9 +83,7 @@ router.get('/:id', (req, res) => {
         if (post.length > 0) {
             res.status(200).json(post);
         } else {
-            res.status(404).json({ 
-                errorMessage: "The post with the specified ID does not exist." 
-            })
+            res.status(404).json(error404)
         }
     })
     .catch(err => {
@@ -120,9 +116,7 @@ router.get('/:id/comments', (req, res) => {
                 })
             })
         } else {
-            res.status(404).json({
-                errorMessage: "The post with the specified ID does not exist."
-            })
+            res.status(404).json(error404)
         }
     })
     .catch(err => {
@@ -133,7 +127,21 @@ router.get('/:id/comments', (req, res) => {
 })
 
 // Delete specific post (DELETE, /api/posts/:id)
-
+router.delete('/:id', (req, res) => {
+    Data.remove(postID)
+    .then(count => {
+        if (count > 0) {
+            res.status(200).json({ message: "The post has been removed."})
+        } else {
+            res.status(404).json(error404)
+        }
+    })
+    .catch(err => {
+        res.status(500).json({
+            errorMessage: "The post could not be removed."
+        })
+    })
+})
 
 
 
