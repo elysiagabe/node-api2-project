@@ -6,6 +6,24 @@ const router = express.Router();
 
 // ~~ ENDPOINTS ~~ //
 // Create post (POST, /api/posts)
+router.post('/', (req, res) => {
+    Data.insert(req.body)
+    .then(postObj => {
+        let newPost = {...postObj, ...req.body}
+        if (!newPost.title || !newPost.contents) {
+            res.status(400).json({
+                errorMessage: "Please provide both a title and contents for the post."
+            })
+        } else {
+            res.status(201).json(newPost)
+        }
+    })
+    .catch(err => {
+        res.status(500).json({
+            errorMessage: "There was an error while saving the post to the database."
+        })
+    })
+})
 
 
 
