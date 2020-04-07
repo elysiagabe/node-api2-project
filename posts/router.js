@@ -128,7 +128,7 @@ router.get('/:id/comments', (req, res) => {
 
 // Delete specific post (DELETE, /api/posts/:id)
 router.delete('/:id', (req, res) => {
-    Data.remove(postID)
+    Data.remove(req.params.id)
     .then(count => {
         if (count > 0) {
             res.status(200).json({ message: "The post has been removed."})
@@ -143,9 +143,42 @@ router.delete('/:id', (req, res) => {
     })
 })
 
-
-
 // Update specific post (PUT, /api/posts/:id)
+router.put('/:id', (req, res) => {
+    const updateID = req.params.id;
+    Data.findById(updateID)
+    .then(post => {
+        if (post.length > 0) {
+            Data.update(updateID, req.body)
+            .then(count => {
+                const updatedPost = {...req.body}
+                if (!updatedPost.title || !updatedPost.contents) {
+                    res.status(400).json({
+                        errorMessage: "Please provide both the title and contents for the post."
+                    })
+                } else if (count == 1) {
+                    res.status(200).json(updatedPost)
+                } else {
+                    res.status(500).json({
+                        errorMessage: "The post information could not be modified."
+                    })
+                }
+            })
+            .catch(err => {
+                res.status(500).json({
+                    errorMessage: "The post information could not be modified."
+                })
+            })
+        } else {
+            res.status(404).json(error404)
+        }
+    })
+    .catch(err => {
+        res.status(500).json({
+            errorMessage: "The post information could not be modified."
+        })
+    })
+})
 
 
 
